@@ -18,12 +18,23 @@ class SQF implements DBOperation{
   @override
   Future<Database?> initDB() async{
    String dbPath= await getDatabasesPath();
-   String path=dbPath+"/notes_db.db";
+   String path=dbPath+"/notes_db2.db";
    Database database= await openDatabase(path,version: 1,onCreate: (db, version) async{
      await db.execute(
          '''
          
-         CREATE TABLE "Notes" ("id" INTEGER PRIMARY KEY, "note" TEXT)
+         CREATE TABLE "Notes" ("id" INTEGER PRIMARY KEY, "note" TEXT,
+         "fk_user" integer ,
+         foreign key ("fk_user") references "User" ("user_id")
+         )
+         
+         ''');
+     await db.execute(
+         '''
+         
+         CREATE TABLE "User" ("user_id" INTEGER PRIMARY KEY, "name" TEXT,
+         "age" integer not null
+         )
          
          ''');
     print("data base created");
@@ -41,9 +52,9 @@ class SQF implements DBOperation{
   }
 
   @override
-  readData(String tableName) async{
+  readData(String tableName,String? where) async{
     var myDB=await db;
-    var res= await myDB!.query(tableName);
+    var res= await myDB!.query(tableName,where:where );
     return res;
   }
 
@@ -55,7 +66,7 @@ class SQF implements DBOperation{
   }
 
   @override
-  insertData(String tableName,Map<String,Object> data) async{
+  insertData(String tableName,Map<String,Object?> data) async{
     var myDB=await db;
     var res= await myDB!.insert(tableName,data);
     return res;

@@ -64,21 +64,30 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
-  void insetNote(String note)async{
+  void insetNote(String note,int? fk_user)async{
 
    var res= await sqf.insertData("notes",{
-     "note":note
-   });
+     "note":note,
+     "fk_user":fk_user
+   });}
+   void insetUser(String name,int age)async{
 
-   print(res>0?"success added new note ":"fail insert");
+     var res= await sqf.insertData("User",{
+       "name":name,
+       "age":age,
+     });
+   print(res>0?"success added new user ":"fail insert");
    print("insert raw num $res");
   }
-  void getNotes()async{
+  void getNotes(int userId)async{
 
-    var res= await sqf.readData("Notes");
-
+    var res= await sqf.readData("Notes","fk_user=$userId");
     print(res.toString());
 
+  }
+  void getUsers()async{
+    var res= await sqf.readData("User",null);
+    print(res.toString());
   }
   @override
   Widget build(BuildContext context) {
@@ -132,15 +141,34 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             FloatingActionButton(
               onPressed: () {
-insetNote("ezzat ${Random().nextInt(10)}");
+                insetUser("ezzat mohamed",Random().nextInt(100));
               },
               tooltip: 'add',
               child: const Icon(Icons.add),
             ),
             SizedBox(height: 20,),
+
             FloatingActionButton(
               onPressed: () {
-getNotes();
+
+insetNote("note num ${Random().nextInt(10)}",1);
+              },
+              tooltip: 'add',
+              child: const Icon(Icons.add),
+            ),
+
+            SizedBox(height: 20,),
+            FloatingActionButton(
+              onPressed: () {
+                getUsers();
+              },
+              tooltip: 'read',
+              child: const Icon(Icons.receipt),
+            ),
+            SizedBox(height: 20,),
+            FloatingActionButton(
+              onPressed: () {
+getNotes(1);
               },
               tooltip: 'read',
               child: const Icon(Icons.receipt),
