@@ -88,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void getUsers()async{
     var res= await sqf.readData("User",null);
     print(res.toString());
+    print("////////////////////////////");
   }
   @override
   Widget build(BuildContext context) {
