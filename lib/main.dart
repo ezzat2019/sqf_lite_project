@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sqf_lite_project/app/db_helper.dart';
 import 'package:sqf_lite_project/data/db/sqf.dart';
 
 void main() {
@@ -64,31 +65,48 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
-  void insetNote(String note,int? fk_user)async{
+  void insertNote(String note)async{
 
-   var res= await sqf.insertData("notes",{
+   var res= await sqf.insertData(DBHelper.TABLE_NOTE,{
      "note":note,
-     "fk_user":fk_user
+    
    });}
-   void insetUser(String name,int age)async{
+   void insertUser(String name,int age)async{
 
-     var res= await sqf.insertData("User",{
+     var res= await sqf.insertData(DBHelper.TABLE_USER,{
        "name":name,
        "age":age,
      });
    print(res>0?"success added new user ":"fail insert");
    print("insert raw num $res");
   }
+  void insertFavourite(String name)async{
+
+    var res= await sqf.insertData(DBHelper.TABLE_FAVOURITE,{
+      "fk_user":2,
+      "fk_note":1,
+      "note":name
+    });
+    print(res>0?"success added new user ":"fail insert");
+    print("insert raw num $res");
+  }
+
+  void getFavourites()async{
+
+    var res= await sqf.readData(tableName: DBHelper.TABLE_FAVOURITE);
+    print(res.toString());
+
+  }
   void getNotes(int userId)async{
 
-    var res= await sqf.readData("Notes","fk_user=$userId");
+    var res= await sqf.readData(tableName: DBHelper.TABLE_NOTE);
     print(res.toString());
 
   }
   void getUsers()async{
-    var res= await sqf.readData("User",null);
+    var res= await sqf.readData(tableName: DBHelper.TABLE_USER);
     print(res.toString());
-    print("////////////////////////////");
+
   }
   @override
   Widget build(BuildContext context) {
@@ -142,7 +160,23 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             FloatingActionButton(
               onPressed: () {
-                insetUser("ezzat mohamed",Random().nextInt(100));
+                insertFavourite("hi ezzat");
+              },
+              tooltip: 'fav',
+              child: const Icon(Icons.favorite_border),
+            ),
+            SizedBox(height: 20,),
+            FloatingActionButton(
+              onPressed: () {
+                getFavourites();
+              },
+              tooltip: 'add',
+              child: const Icon(Icons.favorite),
+            ),
+            SizedBox(height: 20,),
+            FloatingActionButton(
+              onPressed: () {
+                insertUser("ezzat mohamed",Random().nextInt(100));
               },
               tooltip: 'add',
               child: const Icon(Icons.add),
@@ -152,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
             FloatingActionButton(
               onPressed: () {
 
-insetNote("note num ${Random().nextInt(10)}",1);
+insertNote("note num ${Random().nextInt(10)}");
               },
               tooltip: 'add',
               child: const Icon(Icons.add),
